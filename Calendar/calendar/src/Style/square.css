@@ -1,0 +1,21 @@
+.calendar {
+  position: relative;
+  height: "100%";
+  width: "100%";
+}
+
+.event-group {
+  display: flex;
+}
+
+.event {
+  background-color: #8db6cd;
+  color: #fff;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 5px;
+}
