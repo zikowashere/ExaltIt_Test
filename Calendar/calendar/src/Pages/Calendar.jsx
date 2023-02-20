@@ -5,6 +5,8 @@ import "../Style/square.css";
 
 function Calendar() {
   const [eventGroups, setEventGroups] = useState([]);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [windowHWidth, setWindowWidth] = useState(window.innerWidth);
 
   const timeToMinutes = (time) => {
     const parts = time.split(":");
@@ -63,7 +65,14 @@ function Calendar() {
 
   useEffect(() => {
     constructGroupEvent();
-  }, [events]);
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="calendar">
