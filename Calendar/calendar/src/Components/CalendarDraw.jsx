@@ -17,7 +17,7 @@ const CalendarDraw = ({ eventGroups }) => {
     const pixelsPerMinute = window.innerHeight / 720;
     const top = Math.floor(calculateTop(start) * pixelsPerMinute);
     const height = Math.floor(duration * pixelsPerMinute);
-    const width = Math.floor(100 / nbOfEvent);
+    const width = 100 / nbOfEvent;
     const left = width * index;
 
     return { top, height, width, left };
