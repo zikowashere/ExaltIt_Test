@@ -1,4 +1,5 @@
 import React from "react";
+import "../Style/Event.css";
 
 const Event = ({ id, height, top, left, width }) => {
   const style = {
@@ -7,7 +8,7 @@ const Event = ({ id, height, top, left, width }) => {
     width: `${width}%`,
     height: `${height}px`,
     background: "blue",
-    border: "1px solid black",
+    border: "0.5px solid black",
   };
 
   return (

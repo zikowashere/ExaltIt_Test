@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Event from "./Event";
-import events from "../Model/input.json";
 import "../Style/Event.css";
 
 const CalendarDraw = ({ eventGroups }) => {
