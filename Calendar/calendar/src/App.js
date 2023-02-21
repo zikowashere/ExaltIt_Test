@@ -1,12 +1,13 @@
 import logo from "./logo.svg";
 import "./App.css";
+import events from "../src/Model/input.json";
 
 import Calendar from "./Pages/Calendar";
 
 function App() {
   return (
     <div className="App">
-      <Calendar />
+      <Calendar events={events} />
     </div>
   );
 }

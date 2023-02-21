@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Square from "../Components/Event";
-import events from "../Model/input.json";
-import "../Style/square.css";
+import React, { useState } from "react";
+import { useEffect } from "react";
+import CalendarDraw from "../Components/CalendarDraw";
 
-function Calendar() {
+const Calendar = ({ events }) => {
   const [eventGroups, setEventGroups] = useState([]);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [windowHWidth, setWindowWidth] = useState(window.innerWidth);
-
-  const timeToMinutes = (time) => {
-    const parts = time.split(":");
-    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-  };
 
   const constructGroupEvent = () => {
     // Sort the events by start time
@@ -22,8 +16,7 @@ function Calendar() {
     let currentGroup = [];
     let lastEventEndTime = null;
 
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i];
+    events.forEach((event) => {
       const eventStartTime = timeToMinutes(event.start);
       const eventEndTime = eventStartTime + event.duration;
 
@@ -35,7 +28,7 @@ function Calendar() {
 
       currentGroup.push(event);
       lastEventEndTime = Math.max(lastEventEndTime, eventEndTime);
-    }
+    });
 
     if (currentGroup.length > 0) {
       eventGroups.push(currentGroup);
@@ -44,27 +37,12 @@ function Calendar() {
     setEventGroups(eventGroups);
   };
 
-  const calculateTop = (start) => {
-    const parts = start.split(":");
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const minutesSince9am = (hours - 9) * 60 + minutes;
-    return minutesSince9am;
+  const timeToMinutes = (time) => {
+    const parts = time.split(":");
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
   };
 
-  // Calculate the position and size of an event based on its start time and duration
-  const calculateEventStyle = (id, start, duration, index, nbOfEvent) => {
-    const pixelsPerMinute = window.innerHeight / 720;
-    const top = Math.floor(calculateTop(start) * pixelsPerMinute);
-    const height = Math.floor(duration * pixelsPerMinute);
-    const width = Math.floor(100 / nbOfEvent);
-    const left = width * index;
-
-    return { top, height, width, left };
-  };
-
-  useEffect(() => {
-    constructGroupEvent();
+  const resizeScreen = () => {
     const handleResize = () => {
       setWindowHeight(window.innerHeight);
       setWindowWidth(window.innerWidth);
@@ -72,35 +50,13 @@ function Calendar() {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  };
+  useEffect(() => {
+    constructGroupEvent();
+    resizeScreen();
   }, []);
 
-  return (
-    <div className="calendar">
-      {eventGroups.map((eventGroup, i) => (
-        <div key={i} className="event-group">
-          {eventGroup.map((event, index) => {
-            const style = calculateEventStyle(
-              event.id,
-              event.start,
-              event.duration,
-              index,
-              eventGroup.length
-            );
-
-            return (
-              <Square
-                id={event.id}
-                height={style.height}
-                top={style.top}
-                left={style.left}
-                width={style.width}
-              />
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
+  return <CalendarDraw eventGroups={eventGroups} />;
+};
 
 export default Calendar;

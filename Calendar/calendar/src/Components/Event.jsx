@@ -1,6 +1,6 @@
 import React from "react";
 
-const Square = ({ id, height, top, left, width }) => {
+const Event = ({ id, height, top, left, width }) => {
   const style = {
     top: `${top}px`,
     left: `${left}%`,
@@ -16,4 +16,4 @@ const Square = ({ id, height, top, left, width }) => {
     </div>
   );
 };
-export default Square;
+export default Event;
