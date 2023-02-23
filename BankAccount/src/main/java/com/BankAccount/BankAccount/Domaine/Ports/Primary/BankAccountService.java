@@ -17,18 +17,18 @@ import java.util.Optional;
 
 @Service
 public class BankAccountService {
-    private AccountRepository accountRepositoryRepository;
+    private AccountRepository accountRepository;
     private TransactionRepository transactionRepository;
 
     public BankAccountService(AccountRepository repository, TransactionRepository transactionRepository){
-        this.accountRepositoryRepository = repository;
+        this.accountRepository = repository;
         this.transactionRepository = transactionRepository;
     }
 
     public Optional<Account> depositeMoney(BigDecimal amount, long id) throws AccountNotFound {
         Account account = null;
         Transaction transaction = null;
-        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
+        Optional<Account> optionalAccount = accountRepository.findByNumber(id);
         if (optionalAccount.isPresent()) {
              account = optionalAccount.get();
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -40,17 +40,17 @@ public class BankAccountService {
             account.setTransactions(account.getTransactions());
             transactionRepository.addTransaction(transaction);
 
-            return Optional.of(accountRepositoryRepository.saveAccount(account));
+            return Optional.of(accountRepository.saveAccount(account));
         } else {
             return Optional.empty();
         }
     }
 
 
-    public Optional<Account> withDrawMoney(BigDecimal amount, long id)  {
+    public Optional<Account> withDrawMoney(BigDecimal amount, long id) throws InsufficientFundsException {
         Account account = null;
         Transaction transaction = null;
-        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
+        Optional<Account> optionalAccount = accountRepository.findByNumber(id);
 
         if (optionalAccount.isPresent()) {
              account = optionalAccount.get();
@@ -65,7 +65,7 @@ public class BankAccountService {
             account.setTransactions(account.getTransactions());
             transactionRepository.addTransaction(transaction);
 
-            return Optional.of(accountRepositoryRepository.saveAccount(account));
+            return Optional.of(accountRepository.saveAccount(account));
         } else {
             throw new AccountNotFound("Compte avec ID " + id + " non trouvé");
         }
@@ -74,7 +74,7 @@ public class BankAccountService {
     public BigDecimal getBalance(long id) {
         BigDecimal balance= null;
         Account account= null;
-        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
+        Optional<Account> optionalAccount = accountRepository.findByNumber(id);
         if(optionalAccount.isPresent()){
             account = optionalAccount.get();
             balance=account.getBalance();
@@ -87,7 +87,7 @@ public class BankAccountService {
     public List<Transaction> getTransactionsById(Long id)  {
         List<Transaction> transactions = null;
         Account account= null;
-        Optional<Account> accountOptional = accountRepositoryRepository.findByNumber(id);
+        Optional<Account> accountOptional = accountRepository.findByNumber(id);
         if(accountOptional.isPresent()){
             account = accountOptional.get();
             transactions = account.getTransactions();
