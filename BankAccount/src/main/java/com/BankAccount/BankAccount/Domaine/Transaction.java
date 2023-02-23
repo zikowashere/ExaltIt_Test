@@ -19,11 +19,14 @@ public class Transaction {
     @JoinColumn(name="account_id")
     private Account account;
 
-    public Transaction(Long id, BigDecimal amount, LocalDateTime timestamp, TransactionType type) {
-        this.id = id;
+    public Transaction(){
+
+    }
+    public Transaction( BigDecimal amount, LocalDateTime timestamp, TransactionType type, Account account) {
         this.amount = amount;
         this.timestamp = timestamp;
         this.type = type;
+        this.account = account;
     }
 
     public Long getId() {

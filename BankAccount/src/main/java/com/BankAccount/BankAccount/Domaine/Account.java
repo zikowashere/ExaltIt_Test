@@ -15,7 +15,9 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
+   public Account(){
 
+   }
     public Account(long id, BigDecimal balance) {
         this.id = id;
         this.balance = balance;

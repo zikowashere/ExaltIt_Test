@@ -2,6 +2,7 @@ package com.BankAccount.BankAccount.Domaine.Ports.Primary;
 
 import com.BankAccount.BankAccount.Domaine.Account;
 import com.BankAccount.BankAccount.Domaine.Ports.Secondary.AccountRepository;
+import com.BankAccount.BankAccount.Domaine.Ports.Secondary.TransactionRepository;
 import com.BankAccount.BankAccount.Domaine.Transaction;
 import com.BankAccount.BankAccount.Domaine.TransactionType;
 import com.BankAccount.BankAccount.Exceptions.AccountNotFound;
@@ -11,56 +12,88 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BankAccountService {
-    private AccountRepository repository;
+    private AccountRepository accountRepositoryRepository;
+    private TransactionRepository transactionRepository;
 
-    public BankAccountService(AccountRepository repository){
-        this.repository = repository;
+    public BankAccountService(AccountRepository repository, TransactionRepository transactionRepository){
+        this.accountRepositoryRepository = repository;
+        this.transactionRepository = transactionRepository;
     }
 
     public Optional<Account> depositeMoney(BigDecimal amount, long id) throws AccountNotFound {
-        Optional<Account> optionalAccount = repository.findByNumber(id);
+        Account account = null;
+        Transaction transaction = null;
+        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
         if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
+             account = optionalAccount.get();
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new InvalidParameterException("impossible d'injecter ce montant");
             }
             account.setBalance(account.getBalance().add(amount));
-            account.getTransactions().add(new Transaction(id, amount, LocalDateTime.now(), TransactionType.DEPOSIT));
-            return Optional.of(repository.saveAccount(account));
+            transaction = new Transaction(amount, LocalDateTime.now(), TransactionType.DEPOSIT,account);
+            account.getTransactions().add(transaction);
+            account.setTransactions(account.getTransactions());
+            transactionRepository.addTransaction(transaction);
+
+            return Optional.of(accountRepositoryRepository.saveAccount(account));
         } else {
             return Optional.empty();
         }
     }
 
 
-    public Optional<Account> withDrawMoney(BigDecimal amount, long id) throws AccountNotFound, InsufficientFundsException {
-        Optional<Account> optionalAccount = repository.findByNumber(id);
+    public Optional<Account> withDrawMoney(BigDecimal amount, long id)  {
+        Account account = null;
+        Transaction transaction = null;
+        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
+
         if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
+             account = optionalAccount.get();
             if (amount.compareTo(BigDecimal.ZERO) <= 0)
                 throw new InvalidParameterException("impossible de retirer ce montant");
             if (account.getBalance().compareTo(amount) < 0)
                 throw new InsufficientFundsException("ressources insuffisantes");
+
             account.setBalance(account.getBalance().subtract(amount));
-            account.getTransactions().add(new Transaction(id, amount, LocalDateTime.now(), TransactionType.WITHDRAWAL));
-            return Optional.of(repository.saveAccount(account));
+            transaction = new Transaction( amount, LocalDateTime.now(), TransactionType.WITHDRAWAL,account);
+            account.getTransactions().add(transaction);
+            account.setTransactions(account.getTransactions());
+            transactionRepository.addTransaction(transaction);
+
+            return Optional.of(accountRepositoryRepository.saveAccount(account));
         } else {
             throw new AccountNotFound("Compte avec ID " + id + " non trouvé");
         }
     }
 
-    public BigDecimal getBalance(long id) throws  AccountNotFound{
-        Optional<Account> optionalAccount = repository.findByNumber(id);
+    public BigDecimal getBalance(long id) {
         BigDecimal balance= null;
+        Account account= null;
+        Optional<Account> optionalAccount = accountRepositoryRepository.findByNumber(id);
         if(optionalAccount.isPresent()){
-            Account account = optionalAccount.get();
+            account = optionalAccount.get();
             balance=account.getBalance();
-        }
+        } else
+            throw  new AccountNotFound("le compte bancaire que vous cherchez n'existe pas");
 
         return  balance;
+    }
+
+    public List<Transaction> getTransactionsById(Long id)  {
+        List<Transaction> transactions = null;
+        Account account= null;
+        Optional<Account> accountOptional = accountRepositoryRepository.findByNumber(id);
+        if(accountOptional.isPresent()){
+            account = accountOptional.get();
+            transactions = account.getTransactions();
+        }else
+            throw  new AccountNotFound("le compte bancaire que vous cherchez n'existe pas");
+        return transactions;
+
     }
 }
