@@ -1,20 +1,20 @@
 package com.BankAccount.BankAccount.Domaine;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.List;
-
+@Entity
+@Table(name = "account")
 public class Account {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
-
+    @Column(nullable = false)
     private BigDecimal balance;
-
+    @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
-    public Account(long id, BigDecimal balance, List<Transaction> transactions) {
-        this.id = id;
-        this.balance = balance;
-        this.transactions = transactions;
-    }
 
     public Account(long id, BigDecimal balance) {
         this.id = id;
