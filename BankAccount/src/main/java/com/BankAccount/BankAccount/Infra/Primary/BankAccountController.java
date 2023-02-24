@@ -33,13 +33,9 @@ public class BankAccountController {
     @PostMapping(value = "/{id}/deposit")
     public ResponseEntity<Optional<Account>> depositeAmountToAccount(@PathVariable Long id, @RequestParam BigDecimal amount) {
         Optional<Account> account=null;
-        try {
-           account = bankAccountService.depositeMoney(amount, id);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return new ResponseEntity<>(account, HttpStatus.OK);
+           account = bankAccountService.depositeMoney(amount, id);
+           return new ResponseEntity<>(account, HttpStatus.OK);
     }
     @PostMapping(value ="/{id}/withdraw")
     public ResponseEntity<Optional<Account>> withDrawMoneyFromAccount(@PathVariable Long id, @RequestParam BigDecimal amount){

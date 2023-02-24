@@ -42,7 +42,7 @@ public class BankAccountService {
 
             return Optional.of(accountRepository.saveAccount(account));
         } else {
-            return Optional.empty();
+            throw new AccountNotFound("Compte avec ID " + id + " non trouvé");
         }
     }
 
