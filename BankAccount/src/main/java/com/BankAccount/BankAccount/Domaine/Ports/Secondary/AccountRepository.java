@@ -3,6 +3,7 @@ import com.BankAccount.BankAccount.Domaine.Account;
 import java.util.Optional;
 
 public interface AccountRepository  {
+
    Optional<Account> findByNumber(Long number) ;
 
 
